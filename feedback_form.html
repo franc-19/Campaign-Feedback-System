@@ -4,47 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback Form</title>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
+
         .form-container {
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            width: 100%;
+            max-width: 400px;
         }
+
         .form-container h2 {
             margin-bottom: 20px;
             font-size: 24px;
             text-align: center;
+            color: #333;
         }
-        .form-container input, .form-container textarea, .form-container select {
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            font-size: 16px;
         }
-        .form-container button {
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #28a745;
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .form-group button {
             width: 100%;
             padding: 10px;
             background-color: #28a745;
             color: #fff;
             border: none;
             border-radius: 4px;
+            font-size: 16px;
             cursor: pointer;
         }
-        .form-container button:hover {
+
+        .form-group button:hover {
             background-color: #218838;
+        }
+
+        .rating {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .star {
+            font-size: 24px;
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        .star.active,
+        .star:hover {
+            color: #ffcc00;
         }
     </style>
 </head>
@@ -52,27 +109,62 @@
     <div class="form-container">
         <h2>Feedback Form</h2>
         <form action="submit_feedback.php" method="POST" onsubmit="return validateForm()">
-            <input type="text" name="name" placeholder="Your Name" required>
-            <input type="email" name="email" placeholder="Your Email" required>
-            <textarea name="feedback" placeholder="Your Feedback" required></textarea>
-            <select name="rating" required>
-                <option value="">Select Rating</option>
-                <option value="1">1 - Poor</option>
-                <option value="2">2 - Fair</option>
-                <option value="3">3 - Good</option>
-                <option value="4">4 - Very Good</option>
-                <option value="5">5 - Excellent</option>
-            </select>
-            <button type="submit">Submit Feedback</button>
+            <!-- Name Field -->
+            <div class="form-group">
+                <label for="name"><i class="fas fa-user"></i> Your Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+            </div>
+
+            <!-- Email Field -->
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Your Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <!-- Feedback Field -->
+            <div class="form-group">
+                <label for="feedback"><i class="fas fa-comment"></i> Your Feedback</label>
+                <textarea id="feedback" name="feedback" placeholder="Enter your feedback" required></textarea>
+            </div>
+
+            <!-- Star Rating Field -->
+            <div class="form-group">
+                <label><i class="fas fa-star"></i> Rating</label>
+                <div class="rating">
+                    <span class="star" data-value="1">&#9733;</span>
+                    <span class="star" data-value="2">&#9733;</span>
+                    <span class="star" data-value="3">&#9733;</span>
+                    <span class="star" data-value="4">&#9733;</span>
+                    <span class="star" data-value="5">&#9733;</span>
+                </div>
+                <input type="hidden" name="rating" id="rating-value" required>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group">
+                <button type="submit">Submit Feedback</button>
+            </div>
         </form>
     </div>
 
     <script>
+        // Star Rating System
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', () => {
+                const value = star.getAttribute('data-value');
+                document.getElementById('rating-value').value = value;
+                document.querySelectorAll('.star').forEach(s => {
+                    s.classList.toggle('active', s.getAttribute('data-value') <= value);
+                });
+            });
+        });
+
+        // Form Validation
         function validateForm() {
-            const name = document.forms[0].name.value;
-            const email = document.forms[0].email.value;
-            const feedback = document.forms[0].feedback.value;
-            const rating = document.forms[0].rating.value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const feedback = document.getElementById('feedback').value;
+            const rating = document.getElementById('rating-value').value;
 
             if (name === "" || email === "" || feedback === "" || rating === "") {
                 alert("All fields are required!");
